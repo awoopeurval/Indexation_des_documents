@@ -1,0 +1,357 @@
+Filename: similarite_entre_2_images_avec_k_means.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    55    145.1 MiB    145.1 MiB           1   @profile(stream=mem_logs_kmeans)
+    56                                         def find_closest_images_with_K_means(query_image_path, folder, N=5, w1=0.5, w2=0.5, n_clusters=3):
+    57    145.6 MiB      0.5 MiB           1       query_image = cv.imread(query_image_path)
+    58    145.6 MiB      0.0 MiB           1       if query_image is None:
+    59                                                 print('Could not open or find the query image!')
+    60                                                 return []
+    61                                             
+    62    146.3 MiB      0.6 MiB           1       query_hist = calculate_histogram(query_image)
+    63    146.4 MiB      0.2 MiB           1       query_hu = calculate_hu_moments(query_image)
+    64                                                
+    65    504.8 MiB    358.4 MiB           1       images = load_images_from_folder(folder)
+    66    504.8 MiB      0.0 MiB           1       features = []
+    67                                             
+    68    511.5 MiB      0.0 MiB        7201       for filename, img in images:
+    69    511.5 MiB      0.9 MiB        7200           img_hist = calculate_histogram(img)
+    70    511.5 MiB      0.0 MiB        7200           img_hu = calculate_hu_moments(img)
+    71    511.5 MiB      5.8 MiB        7200           combined_features = np.concatenate((img_hist, img_hu))
+    72    511.5 MiB      0.1 MiB        7200           features.append(combined_features)
+    73                                         
+    74    517.4 MiB      5.8 MiB           1       features_array = np.array(features)
+    75    517.4 MiB      0.1 MiB           1       print(f"FEATURES ARRAY : \n {features_array} \n")
+    76                                         
+    77    517.4 MiB      0.0 MiB           1       kmeans = KMeans(n_clusters=n_clusters)
+    78    533.3 MiB     15.9 MiB           1       kmeans.fit(features_array)
+    79                                         
+    80    533.3 MiB      0.0 MiB           1       query_features = np.concatenate((query_hist, query_hu)).reshape(1, -1)
+    81    533.4 MiB      0.0 MiB           1       print(f"QUERY FEATURES : \n {query_features} \n")
+    82    533.4 MiB     -0.0 MiB           1       query_cluster = kmeans.predict(query_features)
+    83    533.4 MiB      0.0 MiB           1       print(f"QUERY CLUSTER : \n {query_cluster} \n")
+    84                                         
+    85                                             # Cercher les images presentes dans le meme cluster que l'image requete
+    86    533.4 MiB      0.0 MiB           1       same_cluster_indices = np.where(kmeans.labels_ == query_cluster[0])[0]
+    87    533.4 MiB      0.0 MiB           1       distances = []
+    88                                         
+    89                                             # Calculer les distances entre l'image requete et les images du meme cluster seulement
+    90    533.5 MiB    -31.3 MiB        2632       for idx in same_cluster_indices:
+    91    533.5 MiB    -31.3 MiB        2631           filename, _ = images[idx]
+    92    533.5 MiB    -31.2 MiB        2631           distance = calculate_global_similarity(query_hist,query_hu, features_array[idx][:len(query_hist)], features_array[idx][len(query_hist):], w1, w2)
+    93    533.5 MiB    -31.2 MiB        2631           distances.append((filename, distance))
+    94                                         
+    95                                             
+    96                                             # Filtrer en fonction de la distance et selection le top N 
+    97    533.5 MiB      0.0 MiB        5263       distances.sort(key=lambda x: x[1])
+    98    533.5 MiB      0.0 MiB           1       return distances[:N]
+
+
+Filename: similarite_entre_2_images_avec_k_means.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    55    145.0 MiB    145.0 MiB           1   @profile(stream=mem_logs_kmeans)
+    56                                         def find_closest_images_with_K_means(query_image_path, folder, N=5, w1=0.5, w2=0.5, n_clusters=3):
+    57    145.6 MiB      0.6 MiB           1       query_image = cv.imread(query_image_path)
+    58    145.6 MiB      0.0 MiB           1       if query_image is None:
+    59                                                 print('Could not open or find the query image!')
+    60                                                 return []
+    61                                             
+    62    146.2 MiB      0.7 MiB           1       query_hist = calculate_histogram(query_image)
+    63    146.4 MiB      0.2 MiB           1       query_hu = calculate_hu_moments(query_image)
+    64                                                
+    65    504.9 MiB    358.5 MiB           1       images = load_images_from_folder(folder)
+    66    504.9 MiB      0.0 MiB           1       features = []
+    67                                             
+    68    511.6 MiB      0.0 MiB        7201       for filename, img in images:
+    69    511.6 MiB      0.9 MiB        7200           img_hist = calculate_histogram(img)
+    70    511.6 MiB      0.0 MiB        7200           img_hu = calculate_hu_moments(img)
+    71    511.6 MiB      5.8 MiB        7200           combined_features = np.concatenate((img_hist, img_hu))
+    72    511.6 MiB      0.0 MiB        7200           features.append(combined_features)
+    73                                         
+    74    517.4 MiB      5.8 MiB           1       features_array = np.array(features)
+    75    517.5 MiB      0.1 MiB           1       print(f"FEATURES ARRAY : \n {features_array} \n")
+    76                                         
+    77    517.5 MiB      0.0 MiB           1       kmeans = KMeans(n_clusters=n_clusters)
+    78    533.4 MiB     15.9 MiB           1       kmeans.fit(features_array)
+    79                                         
+    80    533.4 MiB      0.0 MiB           1       query_features = np.concatenate((query_hist, query_hu)).reshape(1, -1)
+    81    533.4 MiB      0.0 MiB           1       print(f"QUERY FEATURES : \n {query_features} \n")
+    82    533.4 MiB     -0.0 MiB           1       query_cluster = kmeans.predict(query_features)
+    83    533.4 MiB     -0.0 MiB           1       print(f"QUERY CLUSTER : \n {query_cluster} \n")
+    84                                         
+    85                                             # Cercher les images presentes dans le meme cluster que l'image requete
+    86    533.4 MiB      0.0 MiB           1       same_cluster_indices = np.where(kmeans.labels_ == query_cluster[0])[0]
+    87    533.4 MiB      0.0 MiB           1       distances = []
+    88                                         
+    89                                             # Calculer les distances entre l'image requete et les images du meme cluster seulement
+    90    533.6 MiB      0.0 MiB        2632       for idx in same_cluster_indices:
+    91    533.6 MiB      0.0 MiB        2631           filename, _ = images[idx]
+    92    533.6 MiB      0.1 MiB        2631           distance = calculate_global_similarity(query_hist,query_hu, features_array[idx][:len(query_hist)], features_array[idx][len(query_hist):], w1, w2)
+    93    533.6 MiB      0.1 MiB        2631           distances.append((filename, distance))
+    94                                         
+    95                                             
+    96                                             # Filtrer en fonction de la distance et selection le top N 
+    97    533.6 MiB      0.0 MiB        5263       distances.sort(key=lambda x: x[1])
+    98    533.6 MiB      0.0 MiB           1       return distances[:N]
+
+
+Filename: similarite_entre_2_images_avec_k_means.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    54    145.2 MiB    145.2 MiB           1   @profile(stream=mem_logs_kmeans)
+    55                                         def find_closest_images_with_K_means(query_image_path, folder, N=5, w1=0.5, w2=0.5, n_clusters=3):
+    56    145.7 MiB      0.5 MiB           1       query_image = cv.imread(query_image_path)
+    57    145.7 MiB      0.0 MiB           1       if query_image is None:
+    58                                                 print('Could not open or find the query image!')
+    59                                                 return []
+    60                                             
+    61    146.3 MiB      0.6 MiB           1       query_hist = calculate_histogram(query_image)
+    62    146.5 MiB      0.2 MiB           1       query_hu = calculate_hu_moments(query_image)
+    63                                                
+    64    504.9 MiB    358.4 MiB           1       images = load_images_from_folder(folder)
+    65    504.9 MiB      0.0 MiB           1       features = []
+    66                                             
+    67    511.5 MiB      0.0 MiB        7201       for filename, img in images:
+    68    511.5 MiB      0.8 MiB        7200           img_hist = calculate_histogram(img)
+    69    511.5 MiB      0.0 MiB        7200           img_hu = calculate_hu_moments(img)
+    70    511.5 MiB      5.8 MiB        7200           combined_features = np.concatenate((img_hist, img_hu))
+    71    511.5 MiB      0.0 MiB        7200           features.append(combined_features)
+    72                                         
+    73    517.4 MiB      5.9 MiB           1       features_array = np.array(features)
+    74    517.4 MiB      0.0 MiB           1       print(f"FEATURES ARRAY : \n {features_array} \n")
+    75                                         
+    76    517.4 MiB      0.0 MiB           1       kmeans = KMeans(n_clusters=n_clusters)
+    77    533.3 MiB     15.9 MiB           1       kmeans.fit(features_array)
+    78                                         
+    79    533.3 MiB      0.0 MiB           1       query_features = np.concatenate((query_hist, query_hu)).reshape(1, -1)
+    80    533.4 MiB      0.1 MiB           1       print(f"QUERY FEATURES : \n {query_features} \n")
+    81    533.3 MiB     -0.0 MiB           1       query_cluster = kmeans.predict(query_features)
+    82    533.3 MiB      0.0 MiB           1       print(f"QUERY CLUSTER : \n {query_cluster} \n")
+    83                                         
+    84                                             # Cercher les images presentes dans le meme cluster que l'image requete
+    85    533.3 MiB      0.0 MiB           1       same_cluster_indices = np.where(kmeans.labels_ == query_cluster[0])[0]
+    86    533.3 MiB      0.0 MiB           1       distances = []
+    87                                         
+    88                                             # Calculer les distances entre l'image requete et les images du meme cluster seulement
+    89    533.5 MiB    -26.4 MiB        2704       for idx in same_cluster_indices:
+    90    533.5 MiB    -26.4 MiB        2703           filename, _ = images[idx]
+    91    533.5 MiB    -26.3 MiB        2703           distance = calculate_global_similarity(query_hist,query_hu, features_array[idx][:len(query_hist)], features_array[idx][len(query_hist):], w1, w2)
+    92    533.5 MiB    -26.3 MiB        2703           distances.append((filename, distance))
+    93                                         
+    94                                             
+    95                                             # Filtrer en fonction de la distance et selection le top N 
+    96    533.5 MiB      0.0 MiB        5407       distances.sort(key=lambda x: x[1])
+    97    533.5 MiB      0.0 MiB           1       return distances[:N]
+
+
+Filename: similarite_entre_2_images_avec_k_means.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    54    144.8 MiB    144.8 MiB           1   @profile(stream=mem_logs_kmeans)
+    55                                         def find_closest_images_with_K_means(query_image_path, folder, N=5, w1=0.5, w2=0.5, n_clusters=3):
+    56    145.4 MiB      0.6 MiB           1       query_image = cv.imread(query_image_path)
+    57    145.4 MiB      0.0 MiB           1       if query_image is None:
+    58                                                 print('Could not open or find the query image!')
+    59                                                 return []
+    60                                             
+    61    146.1 MiB      0.7 MiB           1       query_hist = calculate_histogram(query_image)
+    62    146.2 MiB      0.2 MiB           1       query_hu = calculate_hu_moments(query_image)
+    63                                                
+    64    504.7 MiB    358.4 MiB           1       images = load_images_from_folder(folder)
+    65    504.7 MiB      0.0 MiB           1       features = []
+    66                                             
+    67    511.3 MiB      0.0 MiB        7201       for filename, img in images:
+    68    511.3 MiB      0.8 MiB        7200           img_hist = calculate_histogram(img)
+    69    511.3 MiB      0.0 MiB        7200           img_hu = calculate_hu_moments(img)
+    70    511.3 MiB      5.8 MiB        7200           combined_features = np.concatenate((img_hist, img_hu))
+    71    511.3 MiB      0.0 MiB        7200           features.append(combined_features)
+    72                                         
+    73    517.2 MiB      5.9 MiB           1       features_array = np.array(features)
+    74    517.2 MiB      0.1 MiB           1       print(f"FEATURES ARRAY : \n {features_array} \n")
+    75                                         
+    76    517.2 MiB      0.0 MiB           1       kmeans = KMeans(n_clusters=n_clusters)
+    77    533.1 MiB     15.9 MiB           1       kmeans.fit(features_array)
+    78                                         
+    79    533.2 MiB      0.0 MiB           1       query_features = np.concatenate((query_hist, query_hu)).reshape(1, -1)
+    80    533.2 MiB      0.0 MiB           1       print(f"QUERY FEATURES : \n {query_features} \n")
+    81    533.1 MiB     -0.1 MiB           1       query_cluster = kmeans.predict(query_features)
+    82    533.1 MiB     -0.0 MiB           1       print(f"QUERY CLUSTER : \n {query_cluster} \n")
+    83                                         
+    84                                             # Cercher les images presentes dans le meme cluster que l'image requete
+    85    533.1 MiB      0.0 MiB           1       same_cluster_indices = np.where(kmeans.labels_ == query_cluster[0])[0]
+    86    533.1 MiB      0.0 MiB           1       distances = []
+    87                                         
+    88                                             # Calculer les distances entre l'image requete et les images du meme cluster seulement
+    89    533.3 MiB      0.0 MiB        2704       for idx in same_cluster_indices:
+    90    533.3 MiB      0.0 MiB        2703           filename, _ = images[idx]
+    91    533.3 MiB      0.2 MiB        2703           distance = calculate_global_similarity(query_hist,query_hu, features_array[idx][:len(query_hist)], features_array[idx][len(query_hist):], w1, w2)
+    92    533.3 MiB      0.1 MiB        2703           distances.append((filename, distance))
+    93                                         
+    94                                             
+    95                                             # Filtrer en fonction de la distance et selection le top N 
+    96    533.3 MiB      0.0 MiB        5407       distances.sort(key=lambda x: x[1])
+    97    533.3 MiB      0.0 MiB           1       return distances[:N]
+
+
+Filename: similarite_entre_2_images_avec_k_means.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    55    145.2 MiB    145.2 MiB           1   @profile(stream=mem_logs_kmeans)
+    56                                         def find_closest_images_with_K_means(query_image_path, folder, N=5, w1=0.5, w2=0.5, n_clusters=3):
+    57    145.7 MiB      0.6 MiB           1       query_image = cv.imread(query_image_path)
+    58    145.7 MiB      0.0 MiB           1       if query_image is None:
+    59                                                 print('Could not open or find the query image!')
+    60                                                 return []
+    61                                             
+    62    146.4 MiB      0.7 MiB           1       query_hist = calculate_histogram(query_image)
+    63    146.6 MiB      0.2 MiB           1       query_hu = calculate_hu_moments(query_image)
+    64                                                
+    65    504.9 MiB    358.4 MiB           1       images = load_images_from_folder(folder)
+    66    504.9 MiB      0.0 MiB           1       features = []
+    67                                             
+    68    511.6 MiB      0.0 MiB        7201       for filename, img in images:
+    69    511.6 MiB      0.8 MiB        7200           img_hist = calculate_histogram(img)
+    70    511.6 MiB      0.0 MiB        7200           img_hu = calculate_hu_moments(img)
+    71    511.6 MiB      5.8 MiB        7200           combined_features = np.concatenate((img_hist, img_hu))
+    72    511.6 MiB      0.0 MiB        7200           features.append(combined_features)
+    73                                         
+    74    517.5 MiB      5.9 MiB           1       features_array = np.array(features)
+    75    517.5 MiB      0.1 MiB           1       print(f"FEATURES ARRAY : \n {features_array} \n")
+    76                                         
+    77    517.5 MiB      0.0 MiB           1       kmeans = KMeans(n_clusters=n_clusters)
+    78    533.4 MiB     15.9 MiB           1       kmeans.fit(features_array)
+    79                                         
+    80    533.5 MiB      0.0 MiB           1       query_features = np.concatenate((query_hist, query_hu)).reshape(1, -1)
+    81    533.5 MiB      0.1 MiB           1       print(f"QUERY FEATURES : \n {query_features} \n")
+    82    533.4 MiB     -0.1 MiB           1       query_cluster = kmeans.predict(query_features)
+    83    533.4 MiB      0.0 MiB           1       print(f"QUERY CLUSTER : \n {query_cluster} \n")
+    84                                         
+    85                                             # Cercher les images presentes dans le meme cluster que l'image requete
+    86    533.5 MiB      0.0 MiB           1       same_cluster_indices = np.where(kmeans.labels_ == query_cluster[0])[0]
+    87    533.5 MiB      0.0 MiB           1       distances = []
+    88                                         
+    89                                             # Calculer les distances entre l'image requete et les images du meme cluster seulement
+    90    533.6 MiB      0.0 MiB        2632       for idx in same_cluster_indices:
+    91    533.6 MiB      0.0 MiB        2631           filename, _ = images[idx]
+    92    533.6 MiB      0.1 MiB        2631           distance = calculate_global_similarity(query_hist,query_hu, features_array[idx][:len(query_hist)], features_array[idx][len(query_hist):], w1, w2)
+    93    533.6 MiB      0.0 MiB        2631           distances.append((filename, distance))
+    94                                         
+    95                                             
+    96                                             # Filtrer en fonction de la distance et selection le top N 
+    97    533.6 MiB      0.0 MiB        5263       distances.sort(key=lambda x: x[1])
+    98    533.6 MiB      0.0 MiB           1       return distances[:N]
+
+
+Filename: F:\github.com_extension\indexation_document\similarite_entre_2_images_avec_k_means.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    55    136.1 MiB    136.1 MiB           1   @profile(stream=mem_logs_kmeans)
+    56                                         def find_closest_images_with_K_means(query_image_path, folder, N=5, w1=0.5, w2=0.5, n_clusters=3):
+    57    136.6 MiB      0.5 MiB           1       query_image = cv.imread(query_image_path)
+    58    136.6 MiB      0.0 MiB           1       if query_image is None:
+    59                                                 print('Could not open or find the query image!')
+    60                                                 return []
+    61                                             
+    62    137.2 MiB      0.6 MiB           1       query_hist = calculate_histogram(query_image)
+    63    137.4 MiB      0.2 MiB           1       query_hu = calculate_hu_moments(query_image)
+    64                                                
+    65    495.8 MiB    358.5 MiB           1       images = load_images_from_folder(folder)
+    66    495.8 MiB      0.0 MiB           1       features = []
+    67                                             
+    68    502.5 MiB      0.0 MiB        7201       for filename, img in images:
+    69    502.5 MiB      0.9 MiB        7200           img_hist = calculate_histogram(img)
+    70    502.5 MiB      0.0 MiB        7200           img_hu = calculate_hu_moments(img)
+    71    502.5 MiB      5.7 MiB        7200           combined_features = np.concatenate((img_hist, img_hu))
+    72    502.5 MiB      0.0 MiB        7200           features.append(combined_features)
+    73                                         
+    74    508.3 MiB      5.8 MiB           1       features_array = np.array(features)
+    75    508.4 MiB      0.1 MiB           1       print(f"FEATURES ARRAY : \n {features_array} \n")
+    76                                         
+    77    508.4 MiB      0.0 MiB           1       kmeans = KMeans(n_clusters=n_clusters)
+    78    524.2 MiB     15.9 MiB           1       kmeans.fit(features_array)
+    79                                         
+    80    524.2 MiB      0.0 MiB           1       query_features = np.concatenate((query_hist, query_hu)).reshape(1, -1)
+    81    524.3 MiB      0.0 MiB           1       print(f"QUERY FEATURES : \n {query_features} \n")
+    82    524.2 MiB     -0.1 MiB           1       query_cluster = kmeans.predict(query_features)
+    83    524.2 MiB      0.0 MiB           1       print(f"QUERY CLUSTER : \n {query_cluster} \n")
+    84                                         
+    85                                             # Cercher les images presentes dans le meme cluster que l'image requete
+    86    524.2 MiB      0.0 MiB           1       same_cluster_indices = np.where(kmeans.labels_ == query_cluster[0])[0]
+    87    524.2 MiB      0.0 MiB           1       distances = []
+    88                                         
+    89                                             # Calculer les distances entre l'image requete et les images du meme cluster seulement
+    90    524.4 MiB      0.0 MiB        3329       for idx in same_cluster_indices:
+    91    524.4 MiB      0.0 MiB        3328           filename, _ = images[idx]
+    92    524.4 MiB      0.1 MiB        3328           distance = calculate_global_similarity(query_hist,query_hu, features_array[idx][:len(query_hist)], features_array[idx][len(query_hist):], w1, w2)
+    93    524.4 MiB      0.1 MiB        3328           distances.append((filename, distance))
+    94                                         
+    95                                             
+    96                                             # Filtrer en fonction de la distance et selection le top N 
+    97    524.5 MiB      0.1 MiB        6657       distances.sort(key=lambda x: x[1])
+    98    524.5 MiB      0.0 MiB           1       return distances[:N]
+
+
+Filename: F:\github.com_extension\indexation_document\similarite_entre_2_images_avec_k_means.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    55    137.1 MiB    137.1 MiB           1   @profile(stream=mem_logs_kmeans)
+    56                                         def find_closest_images_with_K_means(query_image_path, folder, N=5, w1=0.5, w2=0.5, n_clusters=3):
+    57    137.7 MiB      0.6 MiB           1       query_image = cv.imread(query_image_path)
+    58    137.7 MiB      0.0 MiB           1       if query_image is None:
+    59                                                 print('Could not open or find the query image!')
+    60                                                 return []
+    61                                             
+    62    138.3 MiB      0.7 MiB           1       query_hist = calculate_histogram(query_image)
+    63    138.5 MiB      0.2 MiB           1       query_hu = calculate_hu_moments(query_image)
+    64                                                
+    65    496.0 MiB    357.5 MiB           1       images = load_images_from_folder(folder)
+    66    496.0 MiB      0.0 MiB           1       features = []
+    67                                             
+    68    502.7 MiB      0.0 MiB        7201       for filename, img in images:
+    69    502.6 MiB      0.9 MiB        7200           img_hist = calculate_histogram(img)
+    70    502.6 MiB      0.0 MiB        7200           img_hu = calculate_hu_moments(img)
+    71    502.7 MiB      5.8 MiB        7200           combined_features = np.concatenate((img_hist, img_hu))
+    72    502.7 MiB      0.0 MiB        7200           features.append(combined_features)
+    73                                         
+    74    508.5 MiB      5.8 MiB           1       features_array = np.array(features)
+    75    508.6 MiB      0.1 MiB           1       print(f"FEATURES ARRAY : \n {features_array} \n")
+    76                                         
+    77    508.6 MiB      0.0 MiB           1       kmeans = KMeans(n_clusters=n_clusters)
+    78    524.4 MiB     15.9 MiB           1       kmeans.fit(features_array)
+    79                                         
+    80    524.4 MiB      0.0 MiB           1       query_features = np.concatenate((query_hist, query_hu)).reshape(1, -1)
+    81    524.5 MiB      0.0 MiB           1       print(f"QUERY FEATURES : \n {query_features} \n")
+    82    524.4 MiB     -0.1 MiB           1       query_cluster = kmeans.predict(query_features)
+    83    524.4 MiB      0.0 MiB           1       print(f"QUERY CLUSTER : \n {query_cluster} \n")
+    84                                         
+    85                                             # Cercher les images presentes dans le meme cluster que l'image requete
+    86    524.4 MiB      0.0 MiB           1       same_cluster_indices = np.where(kmeans.labels_ == query_cluster[0])[0]
+    87    524.4 MiB      0.0 MiB           1       distances = []
+    88    524.4 MiB      0.0 MiB           1       times =[] #
+    89                                         
+    90                                             # Calculer les distances entre l'image requete et les images du meme cluster seulement
+    91    524.8 MiB  -1910.8 MiB        2704       for idx in same_cluster_indices:
+    92    524.8 MiB  -1902.9 MiB        2703           start_time_req = time.time() #
+    93    524.8 MiB  -1902.9 MiB        2703           filename, _ = images[idx]
+    94    524.8 MiB  -1907.1 MiB        2703           distance = calculate_global_similarity(query_hist,query_hu, features_array[idx][:len(query_hist)], features_array[idx][len(query_hist):], w1, w2)
+    95    524.8 MiB  -1910.7 MiB        2703           end_time_req = time.time() #
+    96    524.8 MiB  -1910.8 MiB        2703           times.append((filename, end_time_req-start_time_req)) #
+    97                                                 
+    98    524.8 MiB  -1910.8 MiB        2703           distances.append((filename, distance))
+    99                                         
+   100    512.9 MiB    -11.9 MiB        2704       for filename, time_req in times:
+   101    512.9 MiB      0.0 MiB        2703           print(f"Temps d'execution pour {filename} : {time_req} s")
+   102    512.9 MiB      0.0 MiB        5409       total_time = sum(time_taken for _, time_taken in times)
+   103                                             # Filtrer en fonction de la distance et selection le top N 
+   104    512.9 MiB      0.0 MiB        5407       distances.sort(key=lambda x: x[1])
+   105    512.9 MiB      0.0 MiB           1       return distances[:N], total_time
+
+

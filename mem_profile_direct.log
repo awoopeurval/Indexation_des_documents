@@ -1,0 +1,129 @@
+Filename: F:\github.com_extension\indexation_document\similarite_entre_2_images.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    54    136.2 MiB    136.2 MiB           1   @profile(stream=mem_logs)
+    55                                         def find_closest_images(query_image_path, folder, N=5, w1=0.5, w2=0.5):
+    56    136.7 MiB      0.5 MiB           1       query_image = cv.imread(query_image_path)
+    57    136.7 MiB      0.0 MiB           1       if query_image is None:
+    58                                                 print('Could not open or find the query image!')
+    59                                                 return []
+    60                                             
+    61    137.4 MiB      0.6 MiB           1       query_hist = calculate_histogram(query_image)
+    62    137.5 MiB      0.2 MiB           1       query_hu = calculate_hu_moments(query_image)
+    63    137.6 MiB      0.0 MiB           1       print(query_hu)
+    64                                             
+    65    496.1 MiB    358.5 MiB           1       images = load_images_from_folder(folder)
+    66    496.1 MiB      0.0 MiB           1       distances = []
+    67                                             
+    68    496.9 MiB     -0.8 MiB        7201       for filename, img in images:
+    69    496.9 MiB     -0.8 MiB        7200           img_hist = calculate_histogram(img)
+    70    496.9 MiB     -0.4 MiB        7200           img_hu = calculate_hu_moments(img)
+    71    496.9 MiB     -0.6 MiB        7200           distance = calculate_global_similarity(query_hist, query_hu, img_hist, img_hu, w1, w2)
+    72    496.9 MiB     -0.8 MiB        7200           distances.append((filename, distance))
+    73                                             
+    74    496.9 MiB      0.1 MiB       14401       distances.sort(key=lambda x: x[1])
+    75    496.9 MiB      0.0 MiB           1       return distances[:N]
+
+
+Filename: F:\github.com_extension\indexation_document\similarite_entre_2_images.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    55    137.1 MiB    137.1 MiB           1   @profile(stream=mem_logs)
+    56                                         def find_closest_images(query_image_path, folder, N=5, w1=0.5, w2=0.5):
+    57    137.6 MiB      0.5 MiB           1       query_image = cv.imread(query_image_path)
+    58    137.6 MiB      0.0 MiB           1       if query_image is None:
+    59                                                 print('Could not open or find the query image!')
+    60                                                 return []
+    61                                             
+    62    138.3 MiB      0.7 MiB           1       query_hist = calculate_histogram(query_image)
+    63    138.5 MiB      0.2 MiB           1       query_hu = calculate_hu_moments(query_image)
+    64    138.5 MiB      0.0 MiB           1       print(query_hu)
+    65                                             
+    66    496.1 MiB    357.5 MiB           1       images = load_images_from_folder(folder)
+    67    496.1 MiB      0.0 MiB           1       distances = []
+    68                                             
+    69    496.8 MiB      0.0 MiB        7201       for filename, img in images:
+    70    496.8 MiB      0.0 MiB        7200           img_hist = calculate_histogram(img)
+    71    496.8 MiB      0.4 MiB        7200           img_hu = calculate_hu_moments(img)
+    72    496.8 MiB      0.3 MiB        7200           distance = calculate_global_similarity(query_hist, query_hu, img_hist, img_hu, w1, w2)
+    73    496.8 MiB      0.0 MiB        7200           distances.append((filename, distance))
+    74                                             
+    75    496.9 MiB      0.1 MiB       14401       distances.sort(key=lambda x: x[1])
+    76    496.9 MiB      0.0 MiB           1       return distances[:N]
+
+
+Filename: F:\github.com_extension\indexation_document\similarite_entre_2_images.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    55    137.2 MiB    137.2 MiB           1   @profile(stream=mem_logs)
+    56                                         def find_closest_images(query_image_path, folder, N=5, w1=0.5, w2=0.5):
+    57    137.7 MiB      0.6 MiB           1       query_image = cv.imread(query_image_path)
+    58    137.7 MiB      0.0 MiB           1       if query_image is None:
+    59                                                 print('Could not open or find the query image!')
+    60                                                 return []
+    61                                             
+    62    138.4 MiB      0.7 MiB           1       query_hist = calculate_histogram(query_image)
+    63    138.6 MiB      0.2 MiB           1       query_hu = calculate_hu_moments(query_image)
+    64    138.6 MiB      0.0 MiB           1       print(query_hu)
+    65                                             
+    66    496.1 MiB    357.5 MiB           1       images = load_images_from_folder(folder)
+    67    496.1 MiB      0.0 MiB           1       distances = []
+    68    496.1 MiB      0.0 MiB           1       times =[]
+    69                                             
+    70    497.7 MiB      0.0 MiB        7201       for filename, img in images:
+    71    497.7 MiB      0.0 MiB        7200           start_time_req = time.time() #
+    72    497.7 MiB      0.1 MiB        7200           img_hist = calculate_histogram(img)
+    73    497.7 MiB      1.0 MiB        7200           img_hu = calculate_hu_moments(img)
+    74    497.7 MiB      0.1 MiB        7200           distance = calculate_global_similarity(query_hist, query_hu, img_hist, img_hu, w1, w2)
+    75                                                 
+    76    497.7 MiB      0.0 MiB        7200           end_time_req = time.time() #
+    77    497.7 MiB      0.0 MiB        7200           times.append((filename, end_time_req-start_time_req)) #
+    78    497.7 MiB      0.3 MiB        7200           distances.append((filename, distance))
+    79                                             
+    80    497.8 MiB      0.1 MiB       14401       distances.sort(key=lambda x: x[1])
+    81                                         
+    82    497.8 MiB      0.0 MiB        7201       for filename, time_req in times:
+    83    497.8 MiB      0.0 MiB        7200           print(f"Temps d'execution pour {filename} : {time_req} s")
+    84    497.8 MiB      0.0 MiB           1       return distances[:N]
+
+
+Filename: F:\github.com_extension\indexation_document\similarite_entre_2_images.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    55    136.2 MiB    136.2 MiB           1   @profile(stream=mem_logs)
+    56                                         def find_closest_images(query_image_path, folder, N=5, w1=0.5, w2=0.5):
+    57    136.7 MiB      0.6 MiB           1       query_image = cv.imread(query_image_path)
+    58    136.7 MiB      0.0 MiB           1       if query_image is None:
+    59                                                 print('Could not open or find the query image!')
+    60                                                 return []
+    61                                             
+    62    137.4 MiB      0.7 MiB           1       query_hist = calculate_histogram(query_image)
+    63    137.6 MiB      0.2 MiB           1       query_hu = calculate_hu_moments(query_image)
+    64    137.6 MiB      0.0 MiB           1       print(query_hu)
+    65                                             
+    66    496.2 MiB    358.6 MiB           1       images = load_images_from_folder(folder)
+    67    496.2 MiB      0.0 MiB           1       distances = []
+    68    496.2 MiB      0.0 MiB           1       times =[]
+    69                                             
+    70    497.7 MiB      0.4 MiB        7201       for filename, img in images:
+    71    497.7 MiB      0.0 MiB        7200           start_time_req = time.time() #
+    72    497.7 MiB      0.0 MiB        7200           img_hist = calculate_histogram(img)
+    73    497.7 MiB      0.9 MiB        7200           img_hu = calculate_hu_moments(img)
+    74    497.7 MiB      0.1 MiB        7200           distance = calculate_global_similarity(query_hist, query_hu, img_hist, img_hu, w1, w2)
+    75                                                 
+    76    497.7 MiB      0.0 MiB        7200           end_time_req = time.time() #
+    77    497.7 MiB      0.0 MiB        7200           times.append((filename, end_time_req-start_time_req)) #
+    78    497.7 MiB      0.1 MiB        7200           distances.append((filename, distance))
+    79                                             
+    80    497.8 MiB      0.1 MiB       14401       distances.sort(key=lambda x: x[1])
+    81                                         
+    82    497.8 MiB      0.0 MiB        7201       for filename, time_req in times:
+    83    497.8 MiB      0.0 MiB        7200           print(f"Temps d'execution pour {filename} : {time_req} s")
+    84    497.8 MiB      0.0 MiB       14403       total_time = sum(time_taken for _, time_taken in times)
+    85    497.8 MiB      0.0 MiB           1       return distances[:N], total_time
+
+
